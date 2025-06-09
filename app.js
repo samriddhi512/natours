@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const cookieParser = require('cookie-parser');
+const compression = require('compression');
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
@@ -60,14 +61,16 @@ app.use('/api', limiter);
 
 // express parser - reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({extended: true, limit: '10kb'}));
-app.use(cookieParser())
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+app.use(cookieParser());
 
 // Data sanitisation against NoSQL query injection
 app.use(mongoSanitize()); // look at req body, querystring and params and filter out all the $ and .
 
 // Data sanitization against XSS
 app.use(xss());
+// compress all the text being
+app.use(compression());
 
 // test middleware
 app.use((req, res, next) => {
